@@ -2,12 +2,9 @@ class CommentController < ApplicationController
     skip_before_action :verify_authenticity_token, only: [:publish, :delete]
 
     def list
-      if params[:original].present?
-        @comments = Comment.where(original_post: params[:original])
-      else
-        @comments = Comment.all
-      end
-  
+      encoded_title = params[:title]
+      decoded_title = URI.decode_www_form_component(encoded_title)
+      @comments = Comment.where(original_post: decoded_title)
       render json: @comments
     end
 
@@ -19,11 +16,12 @@ class CommentController < ApplicationController
     def publish
       @comment = Comment.new(comment_params)
       if @comment.save
+          original = comment_params[:original_post]
+          PostController.new.increment_comments(original)
           render json: { message: 'Comment successfully created' }, status: :created
       else
           render json: { error: 'Comment creation failed:', errors: @comment.errors.full_messages }, status: :unprocessable_entity
-    end
-
+      end
     end
 
     def delete

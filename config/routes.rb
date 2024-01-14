@@ -8,8 +8,10 @@ Rails.application.routes.draw do
   post '/like-post', to: 'post#like'
   post '/unlike-post', to: 'post#unlike'
   post '/publish-comment', to: 'comment#publish'
+  post '/search', to: 'post#search'
+  post '/edit-post', to: 'post#edit'
 
   get '/all-posts', to: 'post#list'
-  get '/all-comments', to: 'comment#list'
+  get '/all-comments/:title', to: 'comment#list'
   
 end

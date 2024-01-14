@@ -1,15 +1,24 @@
 class PostController < ApplicationController
-    skip_before_action :verify_authenticity_token, only: [:publish, :delete, :like, :unlike]
+    skip_before_action :verify_authenticity_token, only: [:publish, :delete, :like, :unlike, :search, :edit]
 
     def list
       if params[:owner].present?
         @posts = Post.where(owner: params[:owner])
+      elsif params[:category].present?
+        @posts = Post.where(category: params[:category])
       else
         @posts = Post.all
       end
   
       render json: @posts
     end
+
+
+    def search
+      search_query = "%#{params[:search].downcase}%"
+      @posts = Post.where('lower(title) LIKE ? OR lower(content) LIKE ?', search_query, search_query)
+      render json: @posts
+    end    
 
     def show
       title = params[:title]
@@ -100,6 +109,38 @@ class PostController < ApplicationController
         render json: { error: 'Title are required parameters' }, status: :unprocessable_entity
       end
     end
+
+    def increment_comments(original_post)
+      post = Post.find_by(title: original_post)
+    
+      if post
+        post.increment!(:total_comments)
+        { message: 'Comment count incremented successfully', status: :ok }
+      else
+        { error: 'Post not found', status: :not_found }
+      end
+    end   
+    
+    def edit
+      title = params[:original_title]
+      owner = params[:owner]
+
+    if title.present? && owner.present?
+      @post = Post.find_by(title: title, owner: owner)
+
+      if @post
+        if @post.update(post_params)
+          render json: { message: 'Post edited successfully' }, status: :ok
+        else
+          render json: { error: 'Post edit failed:', errors: @post.errors.full_messages }, status: :unprocessable_entity
+        end
+      else
+        render json: { error: 'Post not found' }, status: :not_found
+      end
+    else
+      render json: { error: 'Title and owner are required parameters' }, status: :unprocessable_entity
+    end
+  end
 
     private
 
