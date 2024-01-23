@@ -119,6 +119,17 @@ class PostController < ApplicationController
       else
         { error: 'Post not found', status: :not_found }
       end
+    end  
+    
+    def decrement_comments(original_post)
+      post = Post.find_by(title: original_post)
+    
+      if post
+        post.decrement!(:total_comments)
+        { message: 'Comment count decremented successfully', status: :ok }
+      else
+        { error: 'Post not found', status: :not_found }
+      end
     end   
     
     def edit

@@ -32,6 +32,8 @@ class CommentController < ApplicationController
   
         if @comment
           @comment.destroy
+          original = comment_params[:original_post]
+          PostController.new.decrement_comments(original)
           render json: { message: 'Comment deleted successfully' }, status: :ok
         else
           render json: { error: 'Comment not found' }, status: :not_found
