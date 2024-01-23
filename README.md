@@ -1,24 +1,11 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+To initiate the backend server for AskWave, follow these steps:
 
-Things you may want to cover:
+Open your terminal.
 
-* Ruby version
+Enter the following command:
 
-* System dependencies
+`rails server -p 3001`
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+This will start the server on port 3001, allowing you to access the AskWave backend.
